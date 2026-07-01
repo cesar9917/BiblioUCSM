@@ -7,9 +7,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalContext
 
 @Composable
 fun LoginScreen(viewModel: LoginViewModel, onNavegarAlCatalogo: () -> Unit) {
+    val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -48,7 +50,7 @@ fun LoginScreen(viewModel: LoginViewModel, onNavegarAlCatalogo: () -> Unit) {
             CircularProgressIndicator()
         } else {
             Button(
-                onClick = { viewModel.autenticarUsuario(onLoginSuccess = onNavegarAlCatalogo) },
+                onClick = { viewModel.autenticarUsuario(context, onLoginSuccess = onNavegarAlCatalogo)},
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Iniciar Sesión")

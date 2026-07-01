@@ -51,7 +51,7 @@ fun CatalogScreen(
                             leadingIcon = { Icon(Icons.Filled.Person, contentDescription = null) },
                             onClick = {
                                 expanded = false
-                                // TODO: Navegar a pantalla de cuenta
+                                navController.navigate(Screen.Account.route)
                             }
                         )
                         DropdownMenuItem(

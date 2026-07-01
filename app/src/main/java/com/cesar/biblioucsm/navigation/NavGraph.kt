@@ -8,6 +8,7 @@ import com.cesar.biblioucsm.ui.screens.catalog.CatalogScreen
 import com.cesar.biblioucsm.ui.screens.catalog.CatalogViewModel
 import com.cesar.biblioucsm.ui.screens.login.LoginScreen
 import com.cesar.biblioucsm.ui.screens.login.LoginViewModel
+import com.cesar.biblioucsm.ui.screens.account.AccountScreen
 
 @Composable
 fun NavGraph(
@@ -18,6 +19,7 @@ fun NavGraph(
     NavHost(
         navController = navController,
         startDestination = Screen.Login.route
+
     ) {
         // Ruta 1: Login
         composable(Screen.Login.route) {
@@ -38,6 +40,11 @@ fun NavGraph(
                 viewModel = catalogViewModel,
                 navController = navController
             )
+        }
+
+        // Ruta 3: Cuenta
+        composable(Screen.Account.route) {
+            AccountScreen(navController = navController)
         }
     }
 }
