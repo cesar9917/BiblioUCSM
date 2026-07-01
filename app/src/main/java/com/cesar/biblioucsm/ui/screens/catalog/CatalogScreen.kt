@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 fun CatalogScreen(viewModel: CatalogViewModel) {
     // Ejecuta la carga de datos al entrar a la pantalla
     LaunchedEffect(Unit) {
-        viewModel.cargarCatálogo()
+        viewModel.cargarCatalogo()
     }
 
     Scaffold(
@@ -23,14 +23,13 @@ fun CatalogScreen(viewModel: CatalogViewModel) {
             TopAppBar(title = { Text("Biblioteca UCSM - Catálogo") })
         }
     ) { paddingValues ->
-        // Organizamos todo verticalmente: Buscador arriba, Lista/Cargando abajo
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
                 .padding(16.dp)
         ) {
-            // 🔍 Barra de búsqueda interactiva
+            // Barra de búsqueda interactiva
             OutlinedTextField(
                 value = viewModel.textoBusqueda,
                 onValueChange = { nuevoTexto -> viewModel.textoBusqueda = nuevoTexto },
@@ -41,6 +40,32 @@ fun CatalogScreen(viewModel: CatalogViewModel) {
                     .padding(bottom = 16.dp),
                 singleLine = true
             )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                // Opcion: TODOS
+                FilterChip(
+                    selected = viewModel.filtroSeleccionado == FiltroDisponibilidad.TODOS,
+                    onClick = { viewModel.filtroSeleccionado = FiltroDisponibilidad.TODOS },
+                    label = { Text("Todos") }
+                )
+
+                // Opcion: DISPONIBLES
+                FilterChip(
+                    selected = viewModel.filtroSeleccionado == FiltroDisponibilidad.DISPONIBLES,
+                    onClick = { viewModel.filtroSeleccionado = FiltroDisponibilidad.DISPONIBLES },
+                    label = { Text("Disponibles") }
+                )
+
+                // Opcion: PRESTADOS
+                FilterChip(
+                    selected = viewModel.filtroSeleccionado == FiltroDisponibilidad.PRESTADOS,
+                    onClick = { viewModel.filtroSeleccionado = FiltroDisponibilidad.PRESTADOS },
+                    label = { Text("Prestados") }
+                )
+            }
 
             if (viewModel.cargando) {
                 Box(
