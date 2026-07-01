@@ -34,7 +34,10 @@ fun NavGraph(
 
         // Ruta 2: Catálogo
         composable(Screen.Catalog.route) {
-            CatalogScreen(viewModel = catalogViewModel)
+            CatalogScreen(
+                viewModel = catalogViewModel,
+                navController = navController
+            )
         }
     }
 }

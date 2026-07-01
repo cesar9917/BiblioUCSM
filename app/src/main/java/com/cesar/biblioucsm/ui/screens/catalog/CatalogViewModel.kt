@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.cesar.biblioucsm.data.model.Libro
 import com.cesar.biblioucsm.data.repository.LibroRepository
 import kotlinx.coroutines.launch
+import android.content.Context
 
 enum class FiltroDisponibilidad {
     TODOS, DISPONIBLES, PRESTADOS
@@ -52,5 +53,12 @@ class CatalogViewModel(private val repository: LibroRepository) : ViewModel() {
                 cargando = false
             }
         }
+    }
+
+    // Importa Context si necesitas borrar SharedPreferences
+    fun cerrarSesion(context: Context) {
+        val prefs = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+        prefs.edit().clear().apply()
+        // Si tienes algún estado de usuario en el ViewModel, límpialo aquí también
     }
 }

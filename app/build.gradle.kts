@@ -41,4 +41,5 @@ dependencies {
 
     // Librería para navegar entre pantallas
     implementation("androidx.navigation:navigation-compose:2.8.5")
+    implementation("androidx.compose.material:material-icons-extended:1.6.0")
 }
