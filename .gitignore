@@ -1,0 +1,34 @@
+# Productos de compilación y artefactos
+**/build/
+build/
+*.apk
+*.aar
+
+# Directorios especificos de Gradle y cachés
+.gradle/
+/buildSrc/build/
+.navigation/
+
+# Configuracion local (¡Crucial! Guarda las rutas de tu SDK de Android)
+local.properties
+
+# Archivos de configuración de Android Studio / IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Excepciones para la configuración de la IDE (opcional, por si compartes estilos de código)
+!.idea/codeStyles/
+
+# Archivos temporales del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Capturas de pantalla y archivos de profiling
+/captures/
+*.hprof
+
+# Archivos de compilación nativa (C/C++)
+.externalNativeBuild/
+.cxx/
