@@ -3,45 +3,40 @@ package com.cesar.biblioucsm
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
+import com.cesar.biblioucsm.data.network.ApiService
+import com.cesar.biblioucsm.data.repository.LibroRepository
+import com.cesar.biblioucsm.navigation.NavGraph
+import com.cesar.biblioucsm.ui.screens.catalog.CatalogViewModel
 import com.cesar.biblioucsm.ui.theme.BiblioUCSMTheme
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+
+        // Inicialización de la arquitectura de datos (Retrofit -> Repository -> ViewModel)
+        val retrofit = Retrofit.Builder()
+            .baseUrl("http://10.0.2.2:8080/api/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        val apiService = retrofit.create(ApiService::class.java)
+        val repository = LibroRepository(apiService)
+        val viewModel = CatalogViewModel(repository)
+
         setContent {
             BiblioUCSMTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                // 1. Creamos el estado del controlador de navegación de Jetpack Compose
+                val navController = rememberNavController()
+
+                // 2. Cargamos nuestro mapa de rutas centralizado
+                NavGraph(
+                    navController = navController,
+                    catalogViewModel = viewModel
+                )
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    BiblioUCSMTheme {
-        Greeting("Android")
     }
 }

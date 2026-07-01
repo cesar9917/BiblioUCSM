@@ -34,4 +34,11 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
+
+    // Librerías para conectarse a la API REST (MySQL)
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+
+    // Librería para navegar entre pantallas
+    implementation("androidx.navigation:navigation-compose:2.8.5")
 }
