@@ -7,4 +7,8 @@ class LibroRepository(private val apiService: ApiService) {
     suspend fun getLibros(): List<Libro> {
         return apiService.obtenerLibros()
     }
+
+    suspend fun getLibroById(id: Int): Libro {
+        return apiService.obtenerLibroPorId(id)
+    }
 }
