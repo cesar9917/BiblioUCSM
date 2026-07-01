@@ -23,27 +23,47 @@ fun CatalogScreen(viewModel: CatalogViewModel) {
             TopAppBar(title = { Text("Biblioteca UCSM - Catálogo") })
         }
     ) { paddingValues ->
-        if (viewModel.cargando) {
-            Box(
-                modifier = Modifier.fillMaxSize().padding(paddingValues),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
-        } else {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize().padding(paddingValues).padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(viewModel.listaLibros) { libro ->
-                    Card(modifier = Modifier.fillMaxWidth()) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Text(text = libro.titulo, style = MaterialTheme.typography.titleMedium)
-                            Text(text = "Autor: ${libro.autor}", style = MaterialTheme.typography.bodyMedium)
-                            Text(
-                                text = if (libro.disponible) "Disponible" else "Prestado",
-                                color = if (libro.disponible) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
-                            )
+        // Organizamos todo verticalmente: Buscador arriba, Lista/Cargando abajo
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(16.dp)
+        ) {
+            // 🔍 Barra de búsqueda interactiva
+            OutlinedTextField(
+                value = viewModel.textoBusqueda,
+                onValueChange = { nuevoTexto -> viewModel.textoBusqueda = nuevoTexto },
+                label = { Text("Buscar libro por título...") },
+                placeholder = { Text("Ej. Android, Kotlin...") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
+                singleLine = true
+            )
+
+            if (viewModel.cargando) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(viewModel.librosFiltrados) { libro ->
+                        Card(modifier = Modifier.fillMaxWidth()) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Text(text = libro.titulo, style = MaterialTheme.typography.titleMedium)
+                                Text(text = "Autor: ${libro.autor}", style = MaterialTheme.typography.bodyMedium)
+                                Text(
+                                    text = if (libro.disponible == 1) "Disponible" else "Prestado",
+                                    color = if (libro.disponible == 1) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
+                                )
+                            }
                         }
                     }
                 }

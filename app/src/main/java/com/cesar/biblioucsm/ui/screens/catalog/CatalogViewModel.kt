@@ -16,6 +16,16 @@ class CatalogViewModel(private val repository: LibroRepository) : ViewModel() {
     var cargando by mutableStateOf(false)
         private set
 
+    var textoBusqueda by mutableStateOf("")
+
+    val librosFiltrados: List<Libro>
+        get() = if (textoBusqueda.isEmpty()) {
+            listaLibros
+        } else {
+            listaLibros.filter { libro ->
+                libro.titulo.contains(textoBusqueda, ignoreCase = true)
+            }
+        }
     fun cargarCatálogo() {
         viewModelScope.launch {
             cargando = true
