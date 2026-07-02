@@ -2,8 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- INTERNET: acceso a red -->
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- NETWORK: estado de conexión -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- HTTP sin cifrado -->
     <application
         android:usesCleartextTraffic="true"
         android:allowBackup="true"

@@ -13,16 +13,22 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 
+// Pantalla de perfil/cuenta del usuario
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AccountScreen(navController: NavController, viewModel: AccountViewModel = viewModel()) {
+    // Contexto de la app
     val context = LocalContext.current
 
-    // 🆕 Cambiado a la función equivalente en inglés que estructuraremos en tu ViewModel
-    LaunchedEffect(Unit) { viewModel.loadUserData(context) }
+    // Carga los datos del usuario al abrir la pantalla
+    LaunchedEffect(Unit) {
+        viewModel.loadUserData(context)
+    }
 
+    // Estructura principal de la pantalla
     Scaffold(
         topBar = {
+            // Barra superior con titulo y boton de regreso
             TopAppBar(
                 title = { Text("Mi Cuenta") },
                 navigationIcon = {
@@ -33,6 +39,7 @@ fun AccountScreen(navController: NavController, viewModel: AccountViewModel = vi
             )
         }
     ) { paddingValues ->
+        // Contenedor principal centrado
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -41,6 +48,7 @@ fun AccountScreen(navController: NavController, viewModel: AccountViewModel = vi
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+            // Icono de usuario
             Icon(
                 Icons.Default.Person,
                 contentDescription = null,
@@ -50,6 +58,7 @@ fun AccountScreen(navController: NavController, viewModel: AccountViewModel = vi
 
             Spacer(modifier = Modifier.height(24.dp))
 
+            // Tarjeta con información del usuario
             Card(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -58,12 +67,13 @@ fun AccountScreen(navController: NavController, viewModel: AccountViewModel = vi
                     modifier = Modifier.padding(24.dp),
                     horizontalAlignment = Alignment.Start
                 ) {
+                    // Nombre del usuario
                     Text(text = "Nombre:", style = MaterialTheme.typography.labelLarge)
-                    // 🆕 Variables del ViewModel actualizadas a inglés
                     Text(text = viewModel.userName, style = MaterialTheme.typography.headlineSmall)
 
                     Spacer(modifier = Modifier.height(16.dp))
 
+                    // Correo del usuario
                     Text(text = "Correo:", style = MaterialTheme.typography.labelLarge)
                     Text(text = viewModel.userEmail, style = MaterialTheme.typography.bodyLarge)
                 }

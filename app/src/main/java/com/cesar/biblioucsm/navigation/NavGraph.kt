@@ -10,16 +10,19 @@ import com.cesar.biblioucsm.ui.screens.login.LoginScreen
 import com.cesar.biblioucsm.ui.screens.login.LoginViewModel
 import com.cesar.biblioucsm.ui.screens.account.AccountScreen
 
+// Grafo de navegación principal de la app
 @Composable
 fun NavGraph(
     navController: NavHostController,
     loginViewModel: LoginViewModel,
     catalogViewModel: CatalogViewModel
 ) {
+    // Contenedor principal de navegacion
     NavHost(
         navController = navController,
         startDestination = Screen.Login.route
     ) {
+        // Pantalla de login
         composable(Screen.Login.route) {
             LoginScreen(
                 viewModel = loginViewModel,
@@ -30,14 +33,14 @@ fun NavGraph(
                 }
             )
         }
-
+        // Pantalla de catálogo de libros
         composable(Screen.Catalog.route) {
             CatalogScreen(
                 viewModel = catalogViewModel,
                 navController = navController
             )
         }
-
+        // Pantalla de cuenta de usuario
         composable(Screen.Account.route) {
             AccountScreen(navController = navController)
         }

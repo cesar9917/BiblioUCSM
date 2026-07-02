@@ -9,12 +9,17 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalContext
 
+// Pantalla de inicio de sesión de la aplicación
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel,
-    onNavigateToCatalog: () -> Unit // 🆕 Cambiado para coincidir perfectamente con tu NavGraph
+    onNavigateToCatalog: () -> Unit // navegación al catálogo después del login
 ) {
+
+    // Contexto de Android necesario para autenticación o SharedPreferences
     val context = LocalContext.current
+
+    // Contenedor principal centrado en pantalla
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -22,11 +27,17 @@ fun LoginScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = "BiblioUCSM", style = MaterialTheme.typography.headlineLarge)
+
+        // Título de la aplicación
+        Text(
+            text = "BiblioUCSM",
+            style = MaterialTheme.typography.headlineLarge
+        )
+
         Spacer(modifier = Modifier.height(32.dp))
 
+        // Campo de correo institucional
         OutlinedTextField(
-            // 🆕 Estados del ViewModel actualizados a inglés (email)
             value = viewModel.email,
             onValueChange = { viewModel.email = it },
             label = { Text("Correo Institucional") },
@@ -35,8 +46,8 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Campo de contraseña con ocultamiento de texto
         OutlinedTextField(
-            // 🆕 Estados del ViewModel actualizados a inglés (password)
             value = viewModel.password,
             onValueChange = { viewModel.password = it },
             label = { Text("Contraseña") },
@@ -44,21 +55,33 @@ fun LoginScreen(
             modifier = Modifier.fillMaxWidth()
         )
 
-        // 🆕 Variable de error renombrada a errorMessage
+        // Mostrar mensaje de error si existe
         if (viewModel.errorMessage.isNotEmpty()) {
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text = viewModel.errorMessage, color = MaterialTheme.colorScheme.error)
+            Text(
+                text = viewModel.errorMessage,
+                color = MaterialTheme.colorScheme.error
+            )
         }
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // 🆕 Estado de carga renombrado a isLoading
+        // Mostrar indicador de carga o botón de login
         if (viewModel.isLoading) {
+
+            // Indicador de carga mientras se valida usuario
             CircularProgressIndicator()
+
         } else {
+
+            // BotOn para iniciar sesión
             Button(
-                // 🆕 Método de autenticación actualizado a loginUser
-                onClick = { viewModel.loginUser(context, onLoginSuccess = onNavigateToCatalog) },
+                onClick = {
+                    viewModel.loginUser(
+                        context,
+                        onLoginSuccess = onNavigateToCatalog
+                    )
+                },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Iniciar Sesión")

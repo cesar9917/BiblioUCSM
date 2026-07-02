@@ -3,6 +3,7 @@ package com.cesar.biblioucsm.data.network
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
+// Cliente Retrofit que se encarga de crear la conexion con la API
 object RetrofitClient {
     private const val BASE_URL = "http://172.16.10.31:30265/api/"
 

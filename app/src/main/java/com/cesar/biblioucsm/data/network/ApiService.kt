@@ -6,6 +6,7 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
 
+// Interfaz que define las peticiones HTTP hacia la API usando Retrofit
 interface ApiService {
 
     @GET("libros")

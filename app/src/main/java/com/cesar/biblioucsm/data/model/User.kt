@@ -1,8 +1,9 @@
 package com.cesar.biblioucsm.data.model
 
+// Libreria para mapear campos JSON a propiedades del modelo
 import com.google.gson.annotations.SerializedName
 
-// 🆕 Modelo principal del usuario renombrado a User
+// Modelo principal del usuario renombrado a User
 data class User(
     val id: Int = 0,
     @SerializedName("nombre") val nombre: String,
@@ -19,6 +20,6 @@ data class LoginRequest(
 data class AuthResponse(
     val success: Boolean,
     val mensaje: String,
-    // 🆕 Propiedad actualizada para apuntar al nuevo modelo User
+    // Propiedad actualizada para apuntar al nuevo modelo User
     @SerializedName("usuario") val user: User?
 )

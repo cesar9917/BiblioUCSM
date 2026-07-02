@@ -1,5 +1,6 @@
 package com.cesar.biblioucsm.ui.screens.catalog
 
+// Importaciones de UI y navegacion en Jetpack Compose
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -20,6 +21,7 @@ import coil.compose.AsyncImage
 import com.cesar.biblioucsm.data.model.Book
 import com.cesar.biblioucsm.navigation.Screen
 
+// Pantalla principal del catalogo de libros
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CatalogScreen(
@@ -32,24 +34,28 @@ fun CatalogScreen(
     // Estado para el panel de detalles
     var selectedBook by remember { mutableStateOf<Book?>(null) }
 
+    // Estado del Bottom Sheet
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
     )
 
-    // 🆕 Cambiado a la función equivalente en inglés
+    // Carga inicial del catalogo cuando entra a la pantalla
     LaunchedEffect(Unit) {
         viewModel.loadCatalog()
     }
 
+    // Estructura principal de la pantalla
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Biblioteca UCSM - Catálogo") },
+                // Acciones del TopBar
                 actions = {
+                    // Booón de perfil
                     IconButton(onClick = { expanded = true }) {
                         Icon(Icons.Filled.AccountCircle, contentDescription = "Perfil")
                     }
-
+                    // Opcion: ver cuenta
                     DropdownMenu(
                         expanded = expanded,
                         onDismissRequest = { expanded = false }
@@ -62,12 +68,12 @@ fun CatalogScreen(
                                 navController.navigate(Screen.Account.route)
                             }
                         )
+                        // Opcion: cerrar sesión
                         DropdownMenuItem(
                             text = { Text("Cerrar Sesión") },
                             leadingIcon = { Icon(Icons.Filled.ExitToApp, contentDescription = null) },
                             onClick = {
                                 expanded = false
-                                // 🆕 Cambiado a logout
                                 viewModel.logout(context)
                                 navController.navigate(Screen.Login.route) {
                                     popUpTo(Screen.Catalog.route) { inclusive = true }
@@ -79,14 +85,15 @@ fun CatalogScreen(
             )
         }
     ) { paddingValues ->
+        // Contenedor principal de la pantalla
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
                 .padding(16.dp)
         ) {
+            // Campo de busqueda de libros
             OutlinedTextField(
-                // 🆕 Variable de búsqueda renombrada a inglés
                 value = viewModel.searchQuery,
                 onValueChange = { newText -> viewModel.searchQuery = newText },
                 label = { Text("Buscar libro por título...") },
@@ -96,34 +103,46 @@ fun CatalogScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Filtros (Se mantienen los enums, pero adaptados al nuevo nombre de variable del ViewModel)
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            // Filtros por estado del libro
+            Row(
+                modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                // Filtro: todos los libros
                 FilterChip(selected = viewModel.selectedFilter == AvailabilityFilter.ALL, onClick = { viewModel.selectedFilter = AvailabilityFilter.ALL }, label = { Text("Todos") })
+                // Filtro: libros disponibles
                 FilterChip(selected = viewModel.selectedFilter == AvailabilityFilter.AVAILABLE, onClick = { viewModel.selectedFilter = AvailabilityFilter.AVAILABLE }, label = { Text("Disponibles") })
+                // Filtro: libros prestados
                 FilterChip(selected = viewModel.selectedFilter == AvailabilityFilter.BORROWED, onClick = { viewModel.selectedFilter = AvailabilityFilter.BORROWED }, label = { Text("Prestados") })
             }
 
-            // 🆕 Variable de carga renombrada a isLoading
+            // Mostrar loader si está cargando datos
             if (viewModel.isLoading) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator()
                 }
             } else {
-                // 🆕 Variable de lista renombrada a filteredBooks
-                LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    items(viewModel.filteredBooks) { book ->
+                // Lista de libros filtrados
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    // Renderiza cada libro en la lista
+                    items(viewModel.filteredBooks
+                    ) { book ->
+                        // Tarjeta de cada libro
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable { selectedBook = book } // Al hacer clic abrimos el panel
                         ) {
-                            Row(modifier = Modifier.padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                            // Contenido del libro
+                            Row(
+                                modifier = Modifier.padding(8.dp), verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                // Imagen del libro
                                 AsyncImage(
-                                    // 🆕 Propiedades del modelo Book en inglés
                                     model = book.imageUrl,
                                     contentDescription = "Portada",
                                     modifier = Modifier.size(80.dp).padding(end = 16.dp)
                                 )
+                                // Informacion del libro
                                 Column {
                                     Text(text = book.title, style = MaterialTheme.typography.titleMedium)
                                     Text(text = "Autor: ${book.author}", style = MaterialTheme.typography.bodyMedium)
@@ -135,13 +154,17 @@ fun CatalogScreen(
             }
         }
 
-        // --- Panel de Detalles que se despliega al seleccionar un libro ---
+        /// Panel inferior de detalles del libro seleccionado
         selectedBook?.let { book ->
             ModalBottomSheet(
                 onDismissRequest = { selectedBook = null },
                 sheetState = sheetState
             ) {
-                Column(modifier = Modifier.padding(16.dp).padding(bottom = 32.dp)) {
+                // Contenido del detalle del libro
+                Column(
+                    modifier = Modifier.padding(16.dp).padding(bottom = 32.dp)
+                ) {
+                    // Imagen grande del libro
                     AsyncImage(
                         model = book.imageUrl,
                         contentDescription = "Portada",
@@ -151,11 +174,23 @@ fun CatalogScreen(
                         contentScale = ContentScale.Fit
                     )
                     Spacer(modifier = Modifier.height(16.dp))
-                    Text(text = book.title, style = MaterialTheme.typography.headlineSmall)
-                    Text(text = "Autor: ${book.author}", style = MaterialTheme.typography.titleMedium)
+                    // Título del libro
+                    Text(
+                        text = book.title, style = MaterialTheme.typography.headlineSmall
+                    )
+                    // Autor del libro
+                    Text(
+                        text = "Autor: ${book.author}", style = MaterialTheme.typography.titleMedium
+                    )
                     Spacer(modifier = Modifier.height(16.dp))
-                    Text(text = "Descripción", style = MaterialTheme.typography.titleSmall)
-                    Text(text = book.descripcion ?: "Sin descripción disponible", style = MaterialTheme.typography.bodyMedium)
+                    // Descripción del libro
+                    Text(
+                        text = "Descripción", style = MaterialTheme.typography.titleSmall
+                    )
+                    // Texto de descripción
+                    Text(
+                        text = book.descripcion ?: "Sin descripción disponible", style = MaterialTheme.typography.bodyMedium
+                    )
                 }
             }
         }

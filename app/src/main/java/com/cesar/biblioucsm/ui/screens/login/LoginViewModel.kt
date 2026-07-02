@@ -1,5 +1,6 @@
 package com.cesar.biblioucsm.ui.screens.login
 
+// Importaciones para contexto Android, estado y corrutinas
 import android.content.Context
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
@@ -7,44 +8,66 @@ import androidx.lifecycle.viewModelScope
 import com.cesar.biblioucsm.data.repository.UserRepository
 import kotlinx.coroutines.launch
 
+// ViewModel encargado de manejar la lógica del login del usuario
 class LoginViewModel(private val repository: UserRepository) : ViewModel() {
 
-    // 🆕 Variables de estado traducidas al inglés para la UI
     var email by mutableStateOf("")
     var password by mutableStateOf("")
+
     var isLoading by mutableStateOf(false)
+
     var errorMessage by mutableStateOf("")
 
-    // 🆕 Método de autenticación estandarizado
-    fun loginUser(context: Context, onLoginSuccess: () -> Unit) {
+    fun loginUser(
+        context: Context,
+        onLoginSuccess: () -> Unit
+    ) {
+
         if (email.isBlank() || password.isBlank()) {
             errorMessage = "Por favor, llena todos los campos"
             return
         }
 
         viewModelScope.launch {
-            isLoading = true
-            errorMessage = "" // Limpiamos errores previos al intentar conectar
+
+            isLoading = true // activa loading
+            errorMessage = "" // limpia errores anteriores
+
             try {
-                // Llamada a tu repositorio con el método limpio 'login'
+                // Llamada al repositorio para validar credenciales
                 val response = repository.login(email, password)
 
-                // Verificamos el éxito y accedemos al objeto User de la respuesta
+                // Si el login es exitoso y existe usuario
                 if (response.success && response.user != null) {
-                    val prefs = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+
+                    // Guardar datos del usuario en SharedPreferences
+                    val prefs = context.getSharedPreferences(
+                        "user_prefs",
+                        Context.MODE_PRIVATE
+                    )
+
                     prefs.edit().apply {
-                        // Mantenemos las llaves locales en español para no romper la carga en AccountViewModel
+
+                        // Se guardan datos basicos del usuario
                         putString("nombre", response.user.nombre)
                         putString("correo", response.user.correo)
                         apply()
                     }
+
+                    // Navegar al catálogo después del login exitoso
                     onLoginSuccess()
+
                 } else {
+                    // Mostrar mensaje de error del backend
                     errorMessage = response.mensaje
                 }
+
             } catch (e: Exception) {
+                // Error de conexión o fallo inesperado
                 errorMessage = "Error de conexión"
+
             } finally {
+                // Se ejecuta siempre para detener loading
                 isLoading = false
             }
         }
