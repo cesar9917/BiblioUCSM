@@ -10,7 +10,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalContext
 
 @Composable
-fun LoginScreen(viewModel: LoginViewModel, onNavegarAlCatalogo: () -> Unit) {
+fun LoginScreen(
+    viewModel: LoginViewModel,
+    onNavigateToCatalog: () -> Unit // 🆕 Cambiado para coincidir perfectamente con tu NavGraph
+) {
     val context = LocalContext.current
     Column(
         modifier = Modifier
@@ -23,8 +26,9 @@ fun LoginScreen(viewModel: LoginViewModel, onNavegarAlCatalogo: () -> Unit) {
         Spacer(modifier = Modifier.height(32.dp))
 
         OutlinedTextField(
-            value = viewModel.correo,
-            onValueChange = { viewModel.correo = it },
+            // 🆕 Estados del ViewModel actualizados a inglés (email)
+            value = viewModel.email,
+            onValueChange = { viewModel.email = it },
             label = { Text("Correo Institucional") },
             modifier = Modifier.fillMaxWidth()
         )
@@ -32,25 +36,29 @@ fun LoginScreen(viewModel: LoginViewModel, onNavegarAlCatalogo: () -> Unit) {
         Spacer(modifier = Modifier.height(16.dp))
 
         OutlinedTextField(
-            value = viewModel.contrasena,
-            onValueChange = { viewModel.contrasena = it },
+            // 🆕 Estados del ViewModel actualizados a inglés (password)
+            value = viewModel.password,
+            onValueChange = { viewModel.password = it },
             label = { Text("Contraseña") },
             visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth()
         )
 
-        if (viewModel.errorMensaje.isNotEmpty()) {
+        // 🆕 Variable de error renombrada a errorMessage
+        if (viewModel.errorMessage.isNotEmpty()) {
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text = viewModel.errorMensaje, color = MaterialTheme.colorScheme.error)
+            Text(text = viewModel.errorMessage, color = MaterialTheme.colorScheme.error)
         }
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        if (viewModel.cargando) {
+        // 🆕 Estado de carga renombrado a isLoading
+        if (viewModel.isLoading) {
             CircularProgressIndicator()
         } else {
             Button(
-                onClick = { viewModel.autenticarUsuario(context, onLoginSuccess = onNavegarAlCatalogo)},
+                // 🆕 Método de autenticación actualizado a loginUser
+                onClick = { viewModel.loginUser(context, onLoginSuccess = onNavigateToCatalog) },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Iniciar Sesión")

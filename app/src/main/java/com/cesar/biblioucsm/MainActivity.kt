@@ -5,7 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.navigation.compose.rememberNavController
 import com.cesar.biblioucsm.data.network.RetrofitClient
-import com.cesar.biblioucsm.data.repository.LibroRepository
+import com.cesar.biblioucsm.data.repository.BookRepository
 import com.cesar.biblioucsm.data.repository.UserRepository
 import com.cesar.biblioucsm.navigation.NavGraph
 import com.cesar.biblioucsm.ui.screens.catalog.CatalogViewModel
@@ -18,18 +18,18 @@ class MainActivity : ComponentActivity() {
         // 1. Obtener la instancia del ApiService (Retrofit)
         val apiService = RetrofitClient.apiService
 
-        // 2. Inicializar ambos Repositorios
+        // 2. Inicializar ambos Repositorios (Nombres corregidos en camelCase)
         val userRepository = UserRepository(apiService)
-        val LibroRepository = LibroRepository(apiService)
+        val bookRepository = BookRepository(apiService)
 
-        // 3. Inicializar ambos ViewModels pasándoles su repositorio
+        // 3. Inicializar ambos ViewModels pasándoles su respectivo repositorio
         val loginViewModel = LoginViewModel(userRepository)
-        val catalogViewModel = CatalogViewModel(LibroRepository)
+        val catalogViewModel = CatalogViewModel(bookRepository)
 
         setContent {
             val navController = rememberNavController()
 
-            // 4. Pasar el nuevo loginViewModel al NavGraph (Línea 37 ⚡)
+            // 4. Pasar los ViewModels configurados y limpios al NavGraph
             NavGraph(
                 navController = navController,
                 loginViewModel = loginViewModel,

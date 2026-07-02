@@ -17,7 +17,9 @@ import androidx.navigation.NavController
 @Composable
 fun AccountScreen(navController: NavController, viewModel: AccountViewModel = viewModel()) {
     val context = LocalContext.current
-    LaunchedEffect(Unit) { viewModel.cargarDatos(context) }
+
+    // 🆕 Cambiado a la función equivalente en inglés que estructuraremos en tu ViewModel
+    LaunchedEffect(Unit) { viewModel.loadUserData(context) }
 
     Scaffold(
         topBar = {
@@ -31,7 +33,6 @@ fun AccountScreen(navController: NavController, viewModel: AccountViewModel = vi
             )
         }
     ) { paddingValues ->
-        // Contenedor principal centrado
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -40,7 +41,6 @@ fun AccountScreen(navController: NavController, viewModel: AccountViewModel = vi
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Icono de usuario
             Icon(
                 Icons.Default.Person,
                 contentDescription = null,
@@ -50,7 +50,6 @@ fun AccountScreen(navController: NavController, viewModel: AccountViewModel = vi
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Bloque de información
             Card(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -60,12 +59,13 @@ fun AccountScreen(navController: NavController, viewModel: AccountViewModel = vi
                     horizontalAlignment = Alignment.Start
                 ) {
                     Text(text = "Nombre:", style = MaterialTheme.typography.labelLarge)
-                    Text(text = viewModel.nombreUsuario, style = MaterialTheme.typography.headlineSmall)
+                    // 🆕 Variables del ViewModel actualizadas a inglés
+                    Text(text = viewModel.userName, style = MaterialTheme.typography.headlineSmall)
 
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Text(text = "Correo:", style = MaterialTheme.typography.labelLarge)
-                    Text(text = viewModel.correoUsuario, style = MaterialTheme.typography.bodyLarge)
+                    Text(text = viewModel.userEmail, style = MaterialTheme.typography.bodyLarge)
                 }
             }
         }

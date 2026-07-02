@@ -5,60 +5,62 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.cesar.biblioucsm.data.model.Libro
-import com.cesar.biblioucsm.data.repository.LibroRepository
+import com.cesar.biblioucsm.data.model.Book
+import com.cesar.biblioucsm.data.repository.BookRepository
 import kotlinx.coroutines.launch
 import android.content.Context
 
-enum class FiltroDisponibilidad {
-    TODOS, DISPONIBLES, PRESTADOS
+// 🆕 Cambiado a inglés para mantener la consistencia
+enum class AvailabilityFilter {
+    ALL, AVAILABLE, BORROWED
 }
 
-class CatalogViewModel(private val repository: LibroRepository) : ViewModel() {
-    var listaLibros by mutableStateOf<List<Libro>>(emptyList())
+class CatalogViewModel(private val repository: BookRepository) : ViewModel() {
+
+    // 🆕 Estados traducidos y listos para la interfaz
+    var booksList by mutableStateOf<List<Book>>(emptyList())
         private set
 
-    var cargando by mutableStateOf(false)
+    var isLoading by mutableStateOf(false)
         private set
 
-    var textoBusqueda by mutableStateOf("")
+    var searchQuery by mutableStateOf("")
 
-    var filtroSeleccionado by mutableStateOf(FiltroDisponibilidad.TODOS)
+    var selectedFilter by mutableStateOf(AvailabilityFilter.ALL)
 
-    val librosFiltrados: List<Libro>
+    // 🆕 Getter dinámico con filtros actualizados a las propiedades en inglés de Book
+    val filteredBooks: List<Book>
         get() {
-            // Primero filtramos por texto
-            val librosPorTexto = if (textoBusqueda.isEmpty()) {
-                listaLibros
+            val booksByText = if (searchQuery.isEmpty()) {
+                booksList
             } else {
-                listaLibros.filter { it.titulo.contains(textoBusqueda, ignoreCase = true) }
+                booksList.filter { it.title.contains(searchQuery, ignoreCase = true) }
             }
 
-            // Luego, sobre ese resultado, aplicamos el filtro de disponibilidad
-            return when (filtroSeleccionado) {
-                FiltroDisponibilidad.TODOS -> librosPorTexto
-                FiltroDisponibilidad.DISPONIBLES -> librosPorTexto.filter { it.disponible == 1 }
-                FiltroDisponibilidad.PRESTADOS -> librosPorTexto.filter { it.disponible == 0 }
+            return when (selectedFilter) {
+                AvailabilityFilter.ALL -> booksByText
+                AvailabilityFilter.AVAILABLE -> booksByText.filter { it.disponible == 1 }
+                AvailabilityFilter.BORROWED -> booksByText.filter { it.disponible == 0 }
             }
         }
 
-    fun cargarCatalogo() {
+    // 🆕 Función de carga adaptada a BookRepository
+    fun loadCatalog() {
         viewModelScope.launch {
-            cargando = true
+            isLoading = true
             try {
-                listaLibros = repository.getLibros()
+                booksList = repository.getBooks()
             } catch (e: Exception) {
                 // Manejo de errores
             } finally {
-                cargando = false
+                isLoading = false
             }
         }
     }
 
-    // Importa Context si necesitas borrar SharedPreferences
-    fun cerrarSesion(context: Context) {
+    // 🆕 Nombre estandarizado para limpiar preferencias
+    fun logout(context: Context) {
         val prefs = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
         prefs.edit().clear().apply()
-        // Si tienes algún estado de usuario en el ViewModel, límpialo aquí también
     }
 }

@@ -17,7 +17,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.cesar.biblioucsm.data.model.Libro
+import com.cesar.biblioucsm.data.model.Book
 import com.cesar.biblioucsm.navigation.Screen
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -30,15 +30,15 @@ fun CatalogScreen(
     var expanded by remember { mutableStateOf(false) }
 
     // Estado para el panel de detalles
-    var libroSeleccionado by remember { mutableStateOf<Libro?>(null) }
+    var selectedBook by remember { mutableStateOf<Book?>(null) }
 
-    // CORRECCIÓN AQUÍ:
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
     )
 
+    // 🆕 Cambiado a la función equivalente en inglés
     LaunchedEffect(Unit) {
-        viewModel.cargarCatalogo()
+        viewModel.loadCatalog()
     }
 
     Scaffold(
@@ -67,7 +67,8 @@ fun CatalogScreen(
                             leadingIcon = { Icon(Icons.Filled.ExitToApp, contentDescription = null) },
                             onClick = {
                                 expanded = false
-                                viewModel.cerrarSesion(context)
+                                // 🆕 Cambiado a logout
+                                viewModel.logout(context)
                                 navController.navigate(Screen.Login.route) {
                                     popUpTo(Screen.Catalog.route) { inclusive = true }
                                 }
@@ -85,8 +86,9 @@ fun CatalogScreen(
                 .padding(16.dp)
         ) {
             OutlinedTextField(
-                value = viewModel.textoBusqueda,
-                onValueChange = { nuevoTexto -> viewModel.textoBusqueda = nuevoTexto },
+                // 🆕 Variable de búsqueda renombrada a inglés
+                value = viewModel.searchQuery,
+                onValueChange = { newText -> viewModel.searchQuery = newText },
                 label = { Text("Buscar libro por título...") },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
@@ -94,34 +96,37 @@ fun CatalogScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Filtros
+            // Filtros (Se mantienen los enums, pero adaptados al nuevo nombre de variable del ViewModel)
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                FilterChip(selected = viewModel.filtroSeleccionado == FiltroDisponibilidad.TODOS, onClick = { viewModel.filtroSeleccionado = FiltroDisponibilidad.TODOS }, label = { Text("Todos") })
-                FilterChip(selected = viewModel.filtroSeleccionado == FiltroDisponibilidad.DISPONIBLES, onClick = { viewModel.filtroSeleccionado = FiltroDisponibilidad.DISPONIBLES }, label = { Text("Disponibles") })
-                FilterChip(selected = viewModel.filtroSeleccionado == FiltroDisponibilidad.PRESTADOS, onClick = { viewModel.filtroSeleccionado = FiltroDisponibilidad.PRESTADOS }, label = { Text("Prestados") })
+                FilterChip(selected = viewModel.selectedFilter == AvailabilityFilter.ALL, onClick = { viewModel.selectedFilter = AvailabilityFilter.ALL }, label = { Text("Todos") })
+                FilterChip(selected = viewModel.selectedFilter == AvailabilityFilter.AVAILABLE, onClick = { viewModel.selectedFilter = AvailabilityFilter.AVAILABLE }, label = { Text("Disponibles") })
+                FilterChip(selected = viewModel.selectedFilter == AvailabilityFilter.BORROWED, onClick = { viewModel.selectedFilter = AvailabilityFilter.BORROWED }, label = { Text("Prestados") })
             }
 
-            if (viewModel.cargando) {
+            // 🆕 Variable de carga renombrada a isLoading
+            if (viewModel.isLoading) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator()
                 }
             } else {
+                // 🆕 Variable de lista renombrada a filteredBooks
                 LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    items(viewModel.librosFiltrados) { libro ->
+                    items(viewModel.filteredBooks) { book ->
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clickable { libroSeleccionado = libro } // Al hacer clic abrimos el panel
+                                .clickable { selectedBook = book } // Al hacer clic abrimos el panel
                         ) {
                             Row(modifier = Modifier.padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
                                 AsyncImage(
-                                    model = libro.imagenUrl,
+                                    // 🆕 Propiedades del modelo Book en inglés
+                                    model = book.imageUrl,
                                     contentDescription = "Portada",
                                     modifier = Modifier.size(80.dp).padding(end = 16.dp)
                                 )
                                 Column {
-                                    Text(text = libro.titulo, style = MaterialTheme.typography.titleMedium)
-                                    Text(text = "Autor: ${libro.autor}", style = MaterialTheme.typography.bodyMedium)
+                                    Text(text = book.title, style = MaterialTheme.typography.titleMedium)
+                                    Text(text = "Autor: ${book.author}", style = MaterialTheme.typography.bodyMedium)
                                 }
                             }
                         }
@@ -131,14 +136,14 @@ fun CatalogScreen(
         }
 
         // --- Panel de Detalles que se despliega al seleccionar un libro ---
-        libroSeleccionado?.let { libro ->
+        selectedBook?.let { book ->
             ModalBottomSheet(
-                onDismissRequest = { libroSeleccionado = null },
+                onDismissRequest = { selectedBook = null },
                 sheetState = sheetState
             ) {
                 Column(modifier = Modifier.padding(16.dp).padding(bottom = 32.dp)) {
                     AsyncImage(
-                        model = libro.imagenUrl,
+                        model = book.imageUrl,
                         contentDescription = "Portada",
                         modifier = Modifier
                             .fillMaxWidth()
@@ -146,11 +151,11 @@ fun CatalogScreen(
                         contentScale = ContentScale.Fit
                     )
                     Spacer(modifier = Modifier.height(16.dp))
-                    Text(text = libro.titulo, style = MaterialTheme.typography.headlineSmall)
-                    Text(text = "Autor: ${libro.autor}", style = MaterialTheme.typography.titleMedium)
+                    Text(text = book.title, style = MaterialTheme.typography.headlineSmall)
+                    Text(text = "Autor: ${book.author}", style = MaterialTheme.typography.titleMedium)
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(text = "Descripción", style = MaterialTheme.typography.titleSmall)
-                    Text(text = libro.descripcion ?: "Sin descripción disponible", style = MaterialTheme.typography.bodyMedium)
+                    Text(text = book.descripcion ?: "Sin descripción disponible", style = MaterialTheme.typography.bodyMedium)
                 }
             }
         }

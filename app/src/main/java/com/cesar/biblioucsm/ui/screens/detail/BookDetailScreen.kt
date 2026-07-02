@@ -13,33 +13,40 @@ import coil.compose.AsyncImage
 
 @Composable
 fun BookDetailScreen(
-
     navController: NavController,
-    libroId: Int,
+    bookId: Int, // 🆕 Cambiado para coincidir con la ruta de tu Screen.kt
     viewModel: DetailViewModel
 ) {
-    LaunchedEffect(libroId) {
-        viewModel.obtenerDetalle(libroId)
+    // 🆕 Se dispara cuando cambia el id en inglés
+    LaunchedEffect(bookId) {
+        viewModel.loadBookDetail(bookId)
     }
 
-    if (viewModel.cargando) {
-        CircularProgressIndicator()
-    } else if (viewModel.libro != null) {
-        val libro = viewModel.libro!!
+    // 🆕 Estados del ViewModel actualizados a inglés (isLoading)
+    if (viewModel.isLoading) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = androidx.compose.ui.Alignment.Center
+        ) {
+            CircularProgressIndicator()
+        }
+    } else if (viewModel.book != null) {
+        val book = viewModel.book!!
         Column(modifier = Modifier.padding(16.dp).verticalScroll(rememberScrollState())) {
             AsyncImage(
-                model = libro.imagenUrl ?: "",
+                // 🆕 Propiedades del modelo Book adaptadas (.imageUrl, .title, .author)
+                model = book.imageUrl,
                 contentDescription = "Portada",
                 modifier = Modifier.fillMaxWidth().height(300.dp),
                 contentScale = ContentScale.Crop
             )
             Spacer(modifier = Modifier.height(16.dp))
-            Text(text = libro.titulo, style = MaterialTheme.typography.headlineMedium)
-            Text(text = "Autor: ${libro.autor}", style = MaterialTheme.typography.titleMedium)
+            Text(text = book.title, style = MaterialTheme.typography.headlineMedium)
+            Text(text = "Autor: ${book.author}", style = MaterialTheme.typography.titleMedium)
             Spacer(modifier = Modifier.height(16.dp))
             Text(text = "Descripción", style = MaterialTheme.typography.titleSmall)
             Text(
-                text = libro.descripcion ?: "Sin descripción disponible",
+                text = book.descripcion ?: "Sin descripción disponible",
                 style = MaterialTheme.typography.bodyMedium
             )
         }

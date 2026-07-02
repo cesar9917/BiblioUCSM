@@ -7,19 +7,16 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 
 interface ApiService {
-    @GET("libros")
-    suspend fun obtenerLibros(): List<Libro>
 
-    // 🆕 Rutas para la autenticación
+    @GET("libros")
+    suspend fun getBooks(): List<Book>
+
+    @GET("libros/{id}")
+    suspend fun getBookById(@Path("id") id: Int): Book
+
     @POST("usuarios/registrar")
-    suspend fun registrarUsuario(@Body usuario: Usuario): AuthResponse
+    suspend fun registerUser(@Body user: User): AuthResponse
 
     @POST("usuarios/login")
-    suspend fun iniciarSesion(@Body request: LoginRequest): AuthResponse
-
-    @GET("libros/{id}") // Ajusta esta ruta según la estructura de tu API
-    suspend fun obtenerLibroPorId(@Path("id") id: Int): Libro
-
-    @GET("api/libros/{id}")
-    suspend fun getLibroById(@Path("id") id: Int): Libro
+    suspend fun loginUser(@Body request: LoginRequest): AuthResponse
 }
