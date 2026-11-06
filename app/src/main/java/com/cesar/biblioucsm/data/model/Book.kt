@@ -1,14 +1,28 @@
+
 package com.cesar.biblioucsm.data.model
 
 import com.google.gson.annotations.SerializedName
 
-// Modelo que representa un libro recibido desde la API
+// Modelo de libro compatible con la API Node.js
 data class Book(
+    @SerializedName("id")
     val id: Int,
-    val isbn: String,
-    @SerializedName("titulo") val title: String,
-    @SerializedName("autor") val author: String,
-    @SerializedName("imagenUrl") val imageUrl: String,
-    val disponible: Int,
-    @SerializedName("descripcion") val descripcion: String? = null
+
+    @SerializedName("isbn")
+    val isbn: String? = null,
+
+    @SerializedName("title")
+    val title: String? = null,
+
+    @SerializedName("author")
+    val author: String? = null,
+
+    @SerializedName("imageUrl")
+    val imageUrl: String? = null,
+
+    @SerializedName("disponible")
+    val disponible: Int = 1,
+
+    @SerializedName("descripcion")
+    val descripcion: String? = null
 )

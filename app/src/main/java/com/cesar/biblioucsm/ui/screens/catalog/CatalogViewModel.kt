@@ -1,6 +1,8 @@
+
 package com.cesar.biblioucsm.ui.screens.catalog
 
-// Importaciones necesarias para estados, ViewModel y corrutinas
+import android.content.Context
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -8,91 +10,115 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cesar.biblioucsm.data.model.Book
 import com.cesar.biblioucsm.data.repository.BookRepository
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
-import android.content.Context
 
-// Enum que define los estados de filtrado del catálogo
+// Estados de disponibilidad
 enum class AvailabilityFilter {
     ALL,
     AVAILABLE,
     BORROWED
 }
 
-// ViewModel que maneja la lógica del catálogo de libros
-class CatalogViewModel(private val repository: BookRepository) : ViewModel() {
+// ViewModel del catálogo
+class CatalogViewModel(
+    private val repository: BookRepository
+) : ViewModel() {
 
-    // Lista principal de libros obtenidos del repositorio
+    // Lista de libros
     var booksList by mutableStateOf<List<Book>>(emptyList())
-        private set // Solo el ViewModel puede modificarla
+        private set
 
-    // Estado de carga para mostrar o ocultar loading
+    // Estado de carga
     var isLoading by mutableStateOf(false)
         private set
 
-    // Texto de búsqueda ingresado por el usuario
+    // Mensaje de error
+    var errorMessage by mutableStateOf<String?>(null)
+        private set
+
+    // Buscador
     var searchQuery by mutableStateOf("")
 
-    // Filtro seleccionado actualmente (todos, disponibles o prestados)
-    var selectedFilter by mutableStateOf(AvailabilityFilter.ALL)
+    // Filtro seleccionado
+    var selectedFilter by mutableStateOf(
+        AvailabilityFilter.ALL
+    )
 
-    // Lista calculada dinámicamente según búsqueda y filtro
+    // Libros filtrados
     val filteredBooks: List<Book>
         get() {
+            val query = searchQuery.trim()
 
-            // Filtrado por texto (título del libro)
-            val booksByText = if (searchQuery.isEmpty()) {
-                booksList // si no hay búsqueda, usa toda la lista
+            val booksByText = if (query.isEmpty()) {
+                booksList
             } else {
-                // filtra libros que contengan el texto buscado
-                booksList.filter {
-                    it.title.contains(searchQuery, ignoreCase = true)
+                booksList.filter { book ->
+                    book.title.orEmpty().contains(
+                        query,
+                        ignoreCase = true
+                    )
                 }
             }
 
-            // Aplicación del filtro por disponibilidad
             return when (selectedFilter) {
 
-                AvailabilityFilter.ALL ->
-                    booksByText // muestra todos
+                AvailabilityFilter.ALL -> booksByText
 
                 AvailabilityFilter.AVAILABLE ->
-                    booksByText.filter { it.disponible == 1 } // solo disponibles
+                    booksByText.filter {
+                        it.disponible == 1
+                    }
 
                 AvailabilityFilter.BORROWED ->
-                    booksByText.filter { it.disponible == 0 } // solo prestados
+                    booksByText.filter {
+                        it.disponible == 0
+                    }
             }
         }
 
-    // Función para cargar el catálogo desde el repositorio
+    // Obtener libros desde la API
     fun loadCatalog() {
-
-        // Ejecuta corrutina en el scope del ViewModel
         viewModelScope.launch {
 
-            isLoading = true // activa loading
+            isLoading = true
+            errorMessage = null
 
             try {
-                // Obtiene libros desde el repositorio
                 booksList = repository.getBooks()
 
+                Log.d(
+                    "BiblioUCSM",
+                    "Libros cargados: ${booksList.size}"
+                )
+
+            } catch (e: CancellationException) {
+                throw e
+
             } catch (e: Exception) {
-                // Manejo de errores (puede mejorarse con logs o UI error)
+
+                errorMessage = e.message
+                    ?: "No se pudo cargar el catálogo"
+
+                Log.e(
+                    "BiblioUCSM",
+                    "Error al cargar libros",
+                    e
+                )
+
             } finally {
-                isLoading = false // desactiva loading
+                isLoading = false
             }
         }
     }
 
-    // FunciOn para cerrar sesiOn del usuario
+    // Cerrar sesión
     fun logout(context: Context) {
-
-        // Accede a SharedPreferences del usuario
         val prefs = context.getSharedPreferences(
             "user_prefs",
             Context.MODE_PRIVATE
         )
 
-        // Limpia toda la sesiOn guardada
         prefs.edit().clear().apply()
     }
 }

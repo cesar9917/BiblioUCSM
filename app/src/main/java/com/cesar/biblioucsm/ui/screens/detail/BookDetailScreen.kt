@@ -62,7 +62,7 @@ fun BookDetailScreen(
 
             // Título del libro
             Text(
-                text = book.title,
+                text = book.title ?: "Sin título",
                 style = MaterialTheme.typography.headlineMedium
             )
 
